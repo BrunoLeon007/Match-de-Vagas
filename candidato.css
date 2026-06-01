@@ -1,0 +1,136 @@
+   :root { 
+            --dn-blue: #004a99; 
+            --dn-red: #c62127; 
+            --bg-gray: #f8f9fa;
+        }
+
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f4; /* Fundo levemente cinza para destacar o formulário central */
+        }
+
+        /* Container que centraliza tudo na tela */
+        .main-container {
+            width: 100%;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centraliza horizontalmente */
+            border-top: 8px solid var(--dn-blue);
+        }
+
+        /* Cabeçalho centralizado */
+        header {
+            width: 100%;
+            padding: 30px 0;
+            background: white;
+            border-bottom: 1px solid #eee;
+            text-align: center; /* Centraliza o texto */
+        }
+
+        h1 { 
+            color: var(--dn-blue); 
+            font-size: 1.8rem; 
+            text-transform: uppercase; 
+            margin: 0;
+        }
+
+        /* Área do Formulário centralizada com largura máxima controlada */
+        .form-content {
+            background: white;
+            padding: 40px;
+            margin: 20px 0;
+            max-width: 900px; /* Largura ideal para leitura e preenchimento */
+            width: 90%; /* Responsivo para telas menores */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-radius: 8px;
+        }
+
+        label { 
+            display: block; 
+            font-size: 0.85rem; 
+            font-weight: bold; 
+            margin-top: 20px; 
+            color: #333;
+            text-align: left;
+        }
+
+        input[type="text"], select, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 8px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Grid de qualificações */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            gap: 10px; 
+            background: var(--bg-gray); 
+            padding: 20px; 
+            margin-top: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px;
+        }
+
+        .grid label {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 0;
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            border: 1px solid #eee;
+        }
+
+        /* Centralização do botão */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        button { 
+            background: var(--dn-blue); 
+            color: white; 
+            border: none; 
+            padding: 18px 40px; 
+            width: 100%; 
+            max-width: 400px; /* Botão não fica largo demais */
+            font-size: 1rem;
+            font-weight: bold; 
+            margin-top: 30px; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            transition: 0.3s;
+        }
+
+        button:hover { background: #003366; }
+
+        .msg-sucesso { 
+            background: #dcfce7; 
+            color: #166534; 
+            padding: 15px; 
+            margin-top: 20px; 
+            border-left: 6px solid #22c55e;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .form-content { padding: 20px; width: 95%; }
+            .grid { grid-template-columns: 1fr; }
+        }

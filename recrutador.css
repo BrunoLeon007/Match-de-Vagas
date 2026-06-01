@@ -1,0 +1,35 @@
+.btn-excluir {
+    background: var(--dn-red);
+    padding: 5px 10px;
+    font-size: 0.7rem;
+    float: right;
+    margin-top: -5px;
+}
+
+body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+.container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
+
+form input, form textarea { width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; }
+button { padding: 10px 20px; cursor: pointer; }
+
+.vaga-card { 
+    border: 1px solid #eee; 
+    padding: 15px; 
+    margin-top: 10px; 
+    border-radius: 5px; 
+    position: relative; 
+}
+
+/* Estilo do Botão Excluir */
+.btn-excluir {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    float: right;
+}
+
+.btn-excluir:hover { background-color: #cc0000; }
+

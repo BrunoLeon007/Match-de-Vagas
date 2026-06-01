@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DN - Painel RH Administrativo</title>
+
+    <style>
+        :root { --dn-blue: #004a99; --dn-red: #c62127; --bg-gray: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: #e2e8f0; padding: 20px; margin: 0; }
+        .hidden { display: none !important; }
+        .card { background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px; border-top: 6px solid var(--dn-blue); max-width: 1100px; margin-left: auto; margin-right: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        h2 { color: var(--dn-blue); text-transform: uppercase; font-size: 1.1rem; border-left: 5px solid var(--dn-red); padding-left: 10px; margin-bottom: 20px; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        button { background: var(--dn-blue); color: white; border: none; padding: 12px 20px; font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.3s; }
+        button:hover { background: #003366; }
+
+        .btn-excluir-vaga { background: var(--dn-red); padding: 5px 12px; font-size: 0.75rem; float: right; margin-top: -35px; }
+
+        /* Lista de Candidatos dentro da Vaga */
+        .candidato-item { background: #f1f5f9; padding: 10px; margin-top: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--dn-blue); }
+        .candidato-item button { padding: 5px 10px; font-size: 0.7rem; background: #64748b; }
+
+        /* Modal */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; border-top: 10px solid var(--dn-blue); }
+    </style>
+</head>
+<body>
+
+    <!-- TELA DE LOGIN (Omitida aqui para brevidade, mas mantida no seu sistema) -->
+    <!-- ... seu código de login e segurança anterior ... -->
+
+    <div id="painel">
+        <!-- FORMULÁRIO DE VAGA (mantido conforme seu código) -->
+        <div class="card">
+            <h2>Publicar Oportunidade</h2>
+            <input type="text" id="vt" placeholder="Título da Vaga">
+            <select id="ve">
+                <option value="Ensino Médio">Ensino Médio</option>
+                <option value="Graduação">Graduação</option>
+                <option value="Pós-Graduação">Pós-Graduação</option>
+            </select>
+            <button onclick="addVaga()" style="margin-top:15px">POSTAR VAGA AGORA</button>
+        </div>
+
+        <!-- Onde as vagas e candidatos aparecem -->
+        <div id="vagasAtivas"></div>
+    </div>
+
+    <!-- MODAL PARA VER DETALHES DO CANDIDATO -->
+    <div id="modalFicha" class="modal">
+        <div class="modal-content">
+            <h2 id="modalNome">Ficha do Candidato</h2>
+            <div id="dadosFicha"></div>
+            <button onclick="fecharModal()" style="width:100%; background:#64748b; margin-top:15px;">FECHAR</button>
+        </div>
+    </div>
+
+    <script>
+        // Funções de Vagas
+        function addVaga() {
+            const titulo = document.getElementById('vt').value;
+            if(!titulo) return alert("Título obrigatório!");
+            const novaVaga = { id: Date.now(), titulo, escolaridade: document.getElementById('ve').value };
+            let banco = JSON.parse(localStorage.getItem('bancoVagas') || "[]");
+            banco.push(novaVaga);
+            localStorage.setItem('bancoVagas', JSON.stringify(banco));
+            render();
+            document.getElementById('vt').value = ""; 
+        }
+
+        function excluirVaga(id) {
+            if(confirm("Excluir vaga e remover todos os inscritos nela?")) {
+                let banco = JSON.parse(localStorage.getItem('bancoVagas') || "[]");
+                banco = banco.filter(v => v.id !== id);
+                localStorage.setItem('bancoVagas', JSON.stringify(banco));
+                render();
+            }
+        }
+
+        // FUNÇÃO QUE ABRE A FICHA DO CANDIDATO
+        function verFicha(email) {
+            const candidatos = JSON.parse(localStorage.getItem('listaCandidatos') || "[]");
+            const c = candidatos.find(cand => cand.email === email);
+            
+            if(c) {
+                document.getElementById('modalNome').innerText = c.nome;
+                document.getElementById('dadosFicha').innerHTML = `
+                    <p><strong>E-mail:</strong> ${c.email}</p>
+                    <p><strong>Telefone:</strong> ${c.telefone || 'Não informado'}</p>
+                    <p><strong>Escolaridade:</strong> ${c.escolaridade}</p>
+                    <p><strong>Experiência:</strong> ${c.experiencia || 'Não informada'}</p>
+                `;
+                document.getElementById('modalFicha').style.display = 'flex';
+            }
+        }
+
+        function fecharModal() {
+            document.getElementById('modalFicha').style.display = 'none';
+        }
+
+        // FUNÇÃO RENDER CORRIGIDA PARA TRAZER CANDIDATOS
+        function render() {
+            const container = document.getElementById('vagasAtivas');
+            const vagas = JSON.parse(localStorage.getItem('bancoVagas') || "[]");
+            const candidatos = JSON.parse(localStorage.getItem('listaCandidatos') || "[]");
+            
+            container.innerHTML = "<h3 style='max-width:1100px; margin: 20px auto;'>Painel de Candidaturas</h3>";
+
+            vagas.forEach(vaga => {
+                // Filtra candidatos que se inscreveram nesta vaga específica
+                // Importante: No seu form de candidato, você deve salvar o 'vagaId' no objeto do candidato
+                const inscritos = candidatos.filter(c => c.vagaId == vaga.id);
+
+                const divVaga = document.createElement('div');
+                divVaga.className = 'card';
+                divVaga.style.borderTop = "6px solid #ccc";
+                
+                let htmlInscritos = "";
+                if(inscritos.length === 0) {
+                    htmlInscritos = "<p style='font-size:0.8rem; color:gray;'>Nenhum candidato inscrito ainda.</p>";
+                } else {
+                    inscritos.forEach(c => {
+                        htmlInscritos += `
+                            <div class="candidato-item">
+                                <span><strong>${c.nome}</strong> (${c.email})</span>
+                                <button onclick="verFicha('${c.email}')">VER FICHA</button>
+                            </div>
+                        `;
+                    });
+                }
+
+                divVaga.innerHTML = `
+                    <button class="btn-excluir-vaga" onclick="excluirVaga(${vaga.id})">EXCLUIR VAGA</button>
+                    <h3>${vaga.titulo}</h3>
+                    <p><small>Requisito: ${vaga.escolaridade}</small></p>
+                    <hr>
+                    <h4>Candidatos Inscritos (${inscritos.length}):</h4>
+                    ${htmlInscritos}
+                `;
+                container.appendChild(divVaga);
+            });
+        }
+
+        // Inicializa a tela ao carregar
+        window.onload = render;
+    </script>
+</body>
+</html>

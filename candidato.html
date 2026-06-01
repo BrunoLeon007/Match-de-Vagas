@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diebold Nixdorf - Cadastro de Talento</title>
+   <link rel="stylesheet" href="../css/candidato.css">
+</head>
+<body>
+
+    <div class="main-container">
+        <header>
+            <h1>Oportunidade <span style="color:var(--dn-red)">Interna</span></h1>
+            <p style="color: #666; margin-top: 5px;">Portal de Talentos - Diebold Nixdorf</p>
+        </header>
+
+        <div class="form-content">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <label>Nome Completo</label>
+                    <input type="text" id="nome" placeholder="Digite seu nome completo">
+                </div>
+                <div>
+                    <label>Setor Atual</label>
+                    <input type="text" id="setor" placeholder="Ex: Produção">
+                </div>
+            </div>
+            
+            <label>Escolaridade</label>
+            <select id="esc">
+                <option>Ensino Médio</option>
+                <option>Graduação</option>
+                <option>Pós-Graduação</option>
+            </select>
+
+            <label>Qualificações (Selecione os cursos que já possui)</label>
+            <div class="grid">
+                <label><input type="checkbox" name="curso" value="Excel"> Excel</label>
+                <label><input type="checkbox" name="curso" value="Inglês"> Inglês</label>
+                <label><input type="checkbox" name="curso" value="Lean"> Lean Manufacturing</label>
+                <label><input type="checkbox" name="curso" value="Power BI"> Power BI</label>
+                <label><input type="checkbox" name="curso" value="SAP"> SAP</label>
+                <label><input type="checkbox" name="curso" value="Logística"> Logística</label>
+                <label><input type="checkbox" name="curso" value="Totvs"> Totvs</label>
+                <label><input type="checkbox" name="curso" value="IA"> Inteligência Artificial</label>
+                <label><input type="checkbox" name="curso" value="Desenho Técnico"> Desenho Técnico</label>
+                <label><input type="checkbox" name="curso" value="Metrologia"> Metrologia</label>
+                <label><input type="checkbox" name="curso" value="NRs"> Normas (NRs)</label>
+            </div>
+
+            <label>Observações e Outras Informações (Linhas Digitáveis)</label>
+            <textarea id="obs" placeholder="Descreva aqui outros conhecimentos ou informações relevantes para o RH."></textarea>
+
+            <div class="button-container">
+                <button onclick="salvarEConsultar()">FINALIZAR MEU CADASTRO</button>
+            </div>
+            
+            <div id="feedback"></div>
+        </div>
+    </div>
+
+    <script>
+      function salvarEConsultar() {
+    const nome = document.getElementById('nome').value;
+    const setor = document.getElementById('setor').value;
+    const esc = document.getElementById('esc').value;
+    const obs = document.getElementById('obs').value;
+    const cursos = Array.from(document.querySelectorAll('input[name="curso"]:checked')).map(c => c.value);
+
+    // Simulação de tempo de empresa (adicionando data de admissão aleatória para teste se não existir)
+    const admissao = new Date();
+    admissao.setFullYear(admissao.getFullYear() - Math.floor(Math.random() * 10)); 
+
+    if(!nome || !setor) return alert("Por favor, preencha nome e setor.");
+
+    const perfilCandidato = { 
+        nome, setor, escolaridade: esc, cursos, observacao: obs, 
+        dataCadastro: new Date().getTime(),
+        dataAdmissao: admissao.toISOString() // Necessário para o critério de desempate
+    };
+
+    // Lógica de Match com Vagas Existentes
+    const vagas = JSON.parse(localStorage.getItem('bancoVagas') || "[]");
+    const vagaMatch = vagas.find(v => {
+        const matchEscolaridade = v.escolaridade === esc;
+        const matchCursos = v.cursos.every(c => cursos.includes(c));
+        return matchEscolaridade && matchCursos;
+    });
+
+    if(vagaMatch) {
+        const aceita = confirm(`Encontramos uma vaga compatível: ${vagaMatch.titulo}!\nDeseja se candidatar a esta vaga agora?`);
+        if(aceita) {
+            perfilCandidato.vagaPretendida = vagaMatch.titulo;
+            perfilCandidato.idVaga = vagaMatch.id;
+        } else {
+            return; // Cancela a operação
+        }
+    }
+
+    let listaCandidatos = JSON.parse(localStorage.getItem('listaCandidatos') || "[]");
+    listaCandidatos.push(perfilCandidato);
+    localStorage.setItem('listaCandidatos', JSON.stringify(listaCandidatos));
+
+    document.getElementById('feedback').innerHTML = `<div class="msg-sucesso">✓ Inscrição confirmada para a vaga: ${vagaMatch ? vagaMatch.titulo : 'Banco de Talentos'}!</div>`;
+}
+
+    </script>
+</body>
+</html>

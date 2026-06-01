@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match de Vagas</title>
+    <style>
+        :root { 
+            --dn-blue: #004a99; 
+            --dn-red: #c62127; 
+            --bg-gray: #f8fafc; 
+        }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #e2e8f0; 
+            padding: 20px; 
+            margin: 0; 
+        }
+        .hidden { display: none !important; }
+        .card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            border-top: 6px solid var(--dn-blue); 
+            max-width: 1100px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--dn-blue);
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h2 { 
+            color: var(--dn-blue); 
+            text-transform: uppercase; 
+            font-size: 1.1rem; 
+            border-left: 5px solid var(--dn-red); 
+            padding-left: 10px; 
+            margin-bottom: 20px; 
+        }
+        input, select { 
+            width: 100%; 
+            padding: 10px; 
+            margin-top: 5px; 
+            margin-bottom: 15px;
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+        }
+        
+        button { 
+            background: var(--dn-blue); 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            transition: 0.3s; 
+            width: 100%;
+        }
+        button:hover { background: #003366; }
+
+        .links-auxiliares {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .links-auxiliares a {
+            color: var(--dn-blue);
+            font-size: 0.85rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .links-auxiliares a:hover {
+            text-decoration: underline;
+            color: var(--dn-red);
+        }
+
+        /* Container para os dois acessos lado a lado em telas maiores */
+        .grid-acessos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Modal */
+        .modal { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.7); 
+            display: none; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000; 
+        }
+        .modal-content { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 8px; 
+            width: 90%; 
+            max-width: 450px; 
+            border-top: 10px solid var(--dn-blue); 
+            position: relative;
+        }
+        .btn-fechar {
+            background: #64748b;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Match de Vagas</h1>
+
+    <div class="grid-acessos">
+        
+        <!-- ACESSO RECRUTADOR (RH) -->
+        <div class="card">
+            <h2>Acesso Recrutador (RH)</h2>
+            <form onsubmit="realizarLogin(event, 'RH')">
+                <label for="login-rh">E-mail / Usuário:</label>
+                <input type="text" id="login-rh" required placeholder="Digite seu usuário do RH">
+
+                <label for="senha-rh">Senha:</label>
+                <input type="password" id="senha-rh" required placeholder="Digite sua senha">
+
+                <button type="submit">Entrar no Painel</button>
+            </form>
+            <div class="links-auxiliares">
+                <a onclick="abrirModal('cadastro-rh')">Cadastrar nova senha</a>
+                <a onclick="abrirModal('esqueci-rh')">Esqueci a senha</a>
+            </div>
+        </div>
+
+        <!-- ACESSO COLABORADOR (CANDIDATO) -->
+        <div class="card">
+            <h2>Acesso Colaborador</h2>
+            <form onsubmit="realizarLogin(event, 'Colaborador')">
+                <label for="login-colab">E-mail / RE:</label>
+                <input type="text" id="login-colab" required placeholder="Digite seu e-mail ou RE">
+
+                <label for="senha-colab">Senha:</label>
+                <input type="password" id="senha-colab" required placeholder="Digite sua senha">
+
+                <button type="submit">Acessar Vagas</button>
+            </form>
+            <div class="links-auxiliares">
+                <a onclick="abrirModal('cadastro-colab')">Cadastrar nova senha</a>
+                <a onclick="abrirModal('esqueci-colab')">Esqueci a senha</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAIS DE SUPORTE -->
+
+    <!-- Modal Cadastrar Nova Senha RH -->
+    <div id="modal-cadastro-rh" class="modal">
+        <div class="modal-content">
+            <h2>RH - Cadastrar Nova Senha</h2>
+            <form onsubmit="salvarFormulario(event, 'Nova senha cadastrada para o RH!')">
+                <label>E-mail Corporativo:</label>
+                <input type="email" required>
+                <label>Nova Senha:</label>
+                <input type="password" required>
+                <label>Confirme a Senha:</label>
+                <input type="password" required>
+                <button type="submit">Cadastrar Senha</button>
+                <button type="button" class="btn-fechar" onclick="fecharModais()">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Esqueci Senha RH -->
+    <div id="modal-esqueci-rh" class="modal">
+        <div class="modal-content">
+            <h2>RH - Recuperar Senha</h2>
+            <form onsubmit="salvarFormulario(event, 'Link de recuperação enviado para o e-mail do RH!')">
+                <label>Digite seu E-mail Cadastrado:</label>
+                <input type="email" required placeholder="rh@empresa.com">
+                <button type="submit">Recuperar Senha</button>
+                <button type="button" class="btn-fechar" onclick="fecharModais()">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Cadastrar Nova Senha Colaborador -->
+    <div id="modal-cadastro-colab" class="modal">
+        <div class="modal-content">
+            <h2>Colaborador - Cadastrar Nova Senha</h2>
+            <form onsubmit="salvarFormulario(event, 'Nova senha cadastrada com sucesso!')">
+                <label>RE ou E-mail:</label>
+                <input type="text" required>
+                <label>Nova Senha:</label>
+                <input type="password" required>
+                <label>Confirme a Senha:</label>
+                <input type="password" required>
+                <button type="submit">Cadastrar Senha</button>
+                <button type="button" class="btn-fechar" onclick="fecharModais()">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Esqueci Senha Colaborador -->
+    <div id="modal-esqueci-colab" class="modal">
+        <div class="modal-content">
+            <h2>Colaborador - Recuperar Senha</h2>
+            <form onsubmit="salvarFormulario(event, 'Instruções de recuperação enviadas para o seu e-mail!')">
+                <label>Digite seu E-mail ou RE:</label>
+                <input type="text" required>
+                <button type="submit">Recuperar Senha</button>
+                <button type="button" class="btn-fechar" onclick="fecharModais()">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Função que simula o login e redirecionamento conforme o perfil
+        function realizarLogin(event, tipoUsuario) {
+            event.preventDefault();
+            
+            if (tipoUsuario === 'RH') {
+                alert("Login efetuado com sucesso! Redirecionando para a página: RECRUTADOR");
+                window.location.href = "recrutador.html"; // Substitua pelo link real se necessário
+            } else if (tipoUsuario === 'Colaborador') {
+                alert("Login efetuado com sucesso! Redirecionando para a página: CANDIDATO");
+                window.location.href = "candidato.html"; // Substitua pelo link real se necessário
+            }
+        }
+
+        // Funções de controle dos Modais
+        function abrirModal(idModal) {
+            fecharModais(); // Garante que nenhum outro modal fique aberto
+            document.getElementById('modal-' + idModal).style.display = 'flex';
+        }
+
+        function fecharModais() {
+            const modais = document.querySelectorAll('.modal');
+            modais.forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+
+        function salvarFormulario(event, mensagem) {
+            event.preventDefault();
+            alert(mensagem);
+            fecharModais();
+        }
+
+        // Fecha o modal caso o usuário clique na área escura de fundo
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                fecharModais();
+            }
+        }
+    </script>
+</body>
+</html>
